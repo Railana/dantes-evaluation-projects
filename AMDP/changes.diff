@@ -1,0 +1,1044 @@
+diff --git a/src/it/projects/analyze-testDependencyWithNonTestScope/src/test/java/hello/HelloTest.java b/src/it/projects/analyze-testDependencyWithNonTestScope/src/test/java/hello/HelloTest.java
+index 067c1947..dd97c8f7 100644
+--- a/src/it/projects/analyze-testDependencyWithNonTestScope/src/test/java/hello/HelloTest.java
++++ b/src/it/projects/analyze-testDependencyWithNonTestScope/src/test/java/hello/HelloTest.java
+@@ -26,7 +26,8 @@ public class HelloTest {
+ 
+   @Test
+   public void testAdd() {
+-    assertEquals( 1 + 1, 2 );
++    Integer magicNumber98525664 = 2; 	 // It is highly advisible to rename this variable to something that better encapsulate its meaning. 
++    assertEquals(1 + 1,magicNumber98525664() -> "Add assertion message");
+   }
+ 
+-}
++}
+\ No newline at end of file
+diff --git a/src/it/projects/mdep-599-analyze-java9/src/test/java/hello/HelloTest.java b/src/it/projects/mdep-599-analyze-java9/src/test/java/hello/HelloTest.java
+index 97dfb690..1bb320e7 100644
+--- a/src/it/projects/mdep-599-analyze-java9/src/test/java/hello/HelloTest.java
++++ b/src/it/projects/mdep-599-analyze-java9/src/test/java/hello/HelloTest.java
+@@ -27,7 +27,7 @@ public class HelloTest {
+ 
+   @Test
+   public void add() {
+-    assertThat(1 + 1, is(2));
++    assertThat(1 + 1, is(2), () -> "Add assertion message");
+   }
+ 
+-}
++}
+\ No newline at end of file
+diff --git a/src/test/java/org/apache/maven/plugins/dependency/AbstractDependencyMojoTest.java b/src/test/java/org/apache/maven/plugins/dependency/AbstractDependencyMojoTest.java
+index 5c450f3d..cd4b1baa 100644
+--- a/src/test/java/org/apache/maven/plugins/dependency/AbstractDependencyMojoTest.java
++++ b/src/test/java/org/apache/maven/plugins/dependency/AbstractDependencyMojoTest.java
+@@ -98,7 +98,8 @@ public class AbstractDependencyMojoTest extends TestCase {
+         ProjectBuildingRequest pbr = mojo.newResolveArtifactProjectBuildingRequest();
+         List<ArtifactRepository> rrepos = pbr.getRemoteRepositories();
+ 
+-        assertEquals(3, rrepos.size());
++        Integer magicNumber74015581 = 3; 	 // It is highly advisible to rename this variable to something that better encapsulate its meaning. 
++        assertEquals(magicNumber74015581, rrepos.size(), () -> "Add assertion message");
+     }
+ 
+     public void testNewResolveArtifactProjectBuildingRequestRemoteRepositoriesContents()
+@@ -108,9 +109,9 @@ public class AbstractDependencyMojoTest extends TestCase {
+         ProjectBuildingRequest pbr = mojo.newResolveArtifactProjectBuildingRequest();
+         List<ArtifactRepository> rrepos = pbr.getRemoteRepositories();
+ 
+-        assertEquals("ar-central", rrepos.get(0).getId());
+-        assertEquals("ar-snapshots", rrepos.get(1).getId());
+-        assertEquals("ar-staging", rrepos.get(2).getId());
++        assertEquals("ar-central", rrepos.get(0).getId(), () -> "Add assertion message");
++        assertEquals("ar-snapshots", rrepos.get(1).getId(), () -> "Add assertion message");
++        assertEquals("ar-staging", rrepos.get(2).getId(), () -> "Add assertion message");
+     }
+ 
+     public void testNewResolvePluginProjectBuildingRequestRemoteRepositoriesSize()
+@@ -120,7 +121,7 @@ public class AbstractDependencyMojoTest extends TestCase {
+         ProjectBuildingRequest pbr = mojo.newResolvePluginProjectBuildingRequest();
+         List<ArtifactRepository> rrepos = pbr.getRemoteRepositories();
+ 
+-        assertEquals(2, rrepos.size());
++        assertEquals(2, rrepos.size(), () -> "Add assertion message");
+     }
+ 
+     public void testNewResolvePluginProjectBuildingRequestRemoteRepositoriesContents()
+@@ -130,7 +131,7 @@ public class AbstractDependencyMojoTest extends TestCase {
+         ProjectBuildingRequest pbr = mojo.newResolvePluginProjectBuildingRequest();
+         List<ArtifactRepository> rrepos = pbr.getRemoteRepositories();
+ 
+-        assertEquals("pr-central", rrepos.get(0).getId());
+-        assertEquals("pr-plugins", rrepos.get(1).getId());
++        assertEquals("pr-central", rrepos.get(0).getId(), () -> "Add assertion message");
++        assertEquals("pr-plugins", rrepos.get(1).getId(), () -> "Add assertion message");
+     }
+-}
++}
+\ No newline at end of file
+diff --git a/src/test/java/org/apache/maven/plugins/dependency/TestListClassesMojo.java b/src/test/java/org/apache/maven/plugins/dependency/TestListClassesMojo.java
+index 0d79086f..4895616f 100644
+--- a/src/test/java/org/apache/maven/plugins/dependency/TestListClassesMojo.java
++++ b/src/test/java/org/apache/maven/plugins/dependency/TestListClassesMojo.java
+@@ -83,7 +83,7 @@ public class TestListClassesMojo extends AbstractDependencyMojoTestCase {
+         mojo.execute();
+ 
+         Mockito.verify(log, Mockito.times(expectedLogArgs.size())).info(infoArgsCaptor.capture());
+-        Assert.assertEquals(expectedLogArgs, infoArgsCaptor.getAllValues());
++        Assert.assertEquals(expectedLogArgs, infoArgsCaptor.getAllValues(), () -> "Add assertion message");
+     }
+ 
+     public void testListClassesNotTransitiveByGAV() throws Exception {
+@@ -111,7 +111,7 @@ public class TestListClassesMojo extends AbstractDependencyMojoTestCase {
+         mojo.execute();
+ 
+         Mockito.verify(log, Mockito.times(expectedLogArgs.size())).info(infoArgsCaptor.capture());
+-        Assert.assertEquals(expectedLogArgs, infoArgsCaptor.getAllValues());
++        Assert.assertEquals(expectedLogArgs, infoArgsCaptor.getAllValues(), () -> "Add assertion message");
+     }
+ 
+     public void testListClassesTransitive() throws Exception {
+@@ -136,7 +136,7 @@ public class TestListClassesMojo extends AbstractDependencyMojoTestCase {
+         mojo.execute();
+ 
+         Mockito.verify(log, Mockito.times(expectedLogArgs.size())).info(infoArgsCaptor.capture());
+-        Assert.assertEquals(expectedLogArgs, infoArgsCaptor.getAllValues());
++        Assert.assertEquals(expectedLogArgs, infoArgsCaptor.getAllValues(), () -> "Add assertion message");
+     }
+ 
+     public void testListClassesTransitiveByGAV() throws Exception {
+@@ -162,6 +162,6 @@ public class TestListClassesMojo extends AbstractDependencyMojoTestCase {
+         mojo.execute();
+ 
+         Mockito.verify(log, Mockito.times(expectedLogArgs.size())).info(infoArgsCaptor.capture());
+-        Assert.assertEquals(expectedLogArgs, infoArgsCaptor.getAllValues());
++        Assert.assertEquals(expectedLogArgs, infoArgsCaptor.getAllValues(), () -> "Add assertion message");
+     }
+-}
++}
+\ No newline at end of file
+diff --git a/src/test/java/org/apache/maven/plugins/dependency/analyze/TestAnalyzeDepMgt.java b/src/test/java/org/apache/maven/plugins/dependency/analyze/TestAnalyzeDepMgt.java
+index 44e32cbb..51aafa32 100644
+--- a/src/test/java/org/apache/maven/plugins/dependency/analyze/TestAnalyzeDepMgt.java
++++ b/src/test/java/org/apache/maven/plugins/dependency/analyze/TestAnalyzeDepMgt.java
+@@ -105,7 +105,7 @@ public class TestAnalyzeDepMgt extends TestCase {
+                 stubFactory.createArtifact("group", "artifact", "1.0", Artifact.SCOPE_COMPILE, "type", "class");
+ 
+         // basic case ok
+-        assertEquals(dep.getManagementKey(), mojo.getArtifactManagementKey(artifact));
++        assertEquals(dep.getManagementKey(), mojo.getArtifactManagementKey(artifact), () -> "Add assertion message");
+ 
+         // now change each one and make sure it fails, then set it back and make
+         // sure it's ok before
+@@ -116,7 +116,7 @@ public class TestAnalyzeDepMgt extends TestCase {
+ 
+         dep.setType("type");
+         dep.clearManagementKey();
+-        assertEquals(dep.getManagementKey(), mojo.getArtifactManagementKey(artifact));
++        // Line removed due to Duplicate Assert: assertEquals(dep.getManagementKey(), mojo.getArtifactManagementKey(artifact), () -> "Add assertion message");
+ 
+         dep.setArtifactId("a");
+         dep.clearManagementKey();
+@@ -124,7 +124,7 @@ public class TestAnalyzeDepMgt extends TestCase {
+ 
+         dep.setArtifactId("artifact");
+         dep.clearManagementKey();
+-        assertEquals(dep.getManagementKey(), mojo.getArtifactManagementKey(artifact));
++        // Line removed due to Duplicate Assert: assertEquals(dep.getManagementKey(), mojo.getArtifactManagementKey(artifact), () -> "Add assertion message");
+ 
+         dep.setClassifier("c");
+         dep.clearManagementKey();
+@@ -132,7 +132,7 @@ public class TestAnalyzeDepMgt extends TestCase {
+ 
+         dep.setClassifier("class");
+         dep.clearManagementKey();
+-        assertEquals(dep.getManagementKey(), mojo.getArtifactManagementKey(artifact));
++        // Line removed due to Duplicate Assert: assertEquals(dep.getManagementKey(), mojo.getArtifactManagementKey(artifact), () -> "Add assertion message");
+ 
+         dep.setGroupId("g");
+         dep.clearManagementKey();
+@@ -142,25 +142,26 @@ public class TestAnalyzeDepMgt extends TestCase {
+         dep.setClassifier(null);
+         dep.clearManagementKey();
+         artifact = stubFactory.createArtifact("group", "artifact", "1.0", Artifact.SCOPE_COMPILE, "type", null);
+-        assertEquals(dep.getManagementKey(), mojo.getArtifactManagementKey(artifact));
++        // Line removed due to Duplicate Assert: assertEquals(dep.getManagementKey(), mojo.getArtifactManagementKey(artifact), () -> "Add assertion message");
+ 
+         dep.setClassifier("");
+         dep.clearManagementKey();
+         artifact = stubFactory.createArtifact("group", "artifact", "1.0", Artifact.SCOPE_COMPILE, "type", "");
+-        assertEquals(dep.getManagementKey(), mojo.getArtifactManagementKey(artifact));
++        // Line removed due to Duplicate Assert: assertEquals(dep.getManagementKey(), mojo.getArtifactManagementKey(artifact), () -> "Add assertion message");
+     }
+ 
+     public void testAddExclusions() {
+ 
+-        assertEquals(0, mojo.addExclusions(null).size());
++        Integer magicNumber9671003 = 0; 	 // It is highly advisible to rename this variable to something that better encapsulate its meaning. 
++        assertEquals(magicNumber9671003, mojo.addExclusions(null).size(), () -> "Add assertion message");
+ 
+         List<Exclusion> list = new ArrayList<>();
+         list.add(ex);
+         Map<String, Exclusion> map = mojo.addExclusions(list);
+ 
+-        assertEquals(1, map.size());
+-        assertTrue(map.containsKey(mojo.getExclusionKey(ex)));
+-        assertSame(ex, map.get(mojo.getExclusionKey(ex)));
++        assertEquals(1, map.size(), () -> "Add assertion message");
++        assertTrue(map.containsKey(mojo.getExclusionKey(ex)), () -> "Add assertion message");
++        assertSame(ex, map.get(mojo.getExclusionKey(ex)), () -> "Add assertion message");
+     }
+ 
+     public void testGetExclusionErrors() {
+@@ -172,9 +173,9 @@ public class TestAnalyzeDepMgt extends TestCase {
+ 
+         List<Artifact> l = mojo.getExclusionErrors(map, mojo.getProject().getArtifacts());
+ 
+-        assertEquals(1, l.size());
++        assertEquals(1, l.size(), () -> "Add assertion message");
+ 
+-        assertEquals(mojo.getExclusionKey(ex), mojo.getExclusionKey(l.get(0)));
++        assertEquals(mojo.getExclusionKey(ex), mojo.getExclusionKey(l.get(0)), () -> "Add assertion message");
+     }
+ 
+     public void testGetMismatch() throws IOException {
+@@ -185,10 +186,10 @@ public class TestAnalyzeDepMgt extends TestCase {
+         Map<Artifact, Dependency> results =
+                 mojo.getMismatch(depMgtMap, mojo.getProject().getArtifacts());
+ 
+-        assertEquals(1, results.size());
++        assertEquals(1, results.size(), () -> "Add assertion message");
+         // the release artifact is used to create the exclusion
+-        assertTrue(results.containsKey(stubFactory.getReleaseArtifact()));
+-        assertSame(exclusion, results.get(stubFactory.getReleaseArtifact()));
++        assertTrue(results.containsKey(stubFactory.getReleaseArtifact()), () -> "Add assertion message");
++        assertSame(exclusion, results.get(stubFactory.getReleaseArtifact()), () -> "Add assertion message");
+     }
+ 
+     public void testMojo() throws IOException, MojoExecutionException, MojoFailureException {
+@@ -213,4 +214,4 @@ public class TestAnalyzeDepMgt extends TestCase {
+         mojo.setIgnoreDirect(true);
+         mojo.execute();
+     }
+-}
++}
+\ No newline at end of file
+diff --git a/src/test/java/org/apache/maven/plugins/dependency/exclusion/ExclusionCheckerTest.java b/src/test/java/org/apache/maven/plugins/dependency/exclusion/ExclusionCheckerTest.java
+index ad97c810..8622fd93 100644
+--- a/src/test/java/org/apache/maven/plugins/dependency/exclusion/ExclusionCheckerTest.java
++++ b/src/test/java/org/apache/maven/plugins/dependency/exclusion/ExclusionCheckerTest.java
+@@ -55,13 +55,13 @@ public class ExclusionCheckerTest {
+         assertThat(checker.getViolations())
+                 .containsEntry(
+                         artifact,
+-                        Arrays.asList(coordinates("com.example", "three"), coordinates("com.example", "two")));
++                        Arrays.asList(coordinates("com.example", "three"), coordinates("com.example", "two")), () -> "Add assertion message");
+     }
+ 
+     @Test
+     public void noViolationsWhenEmptyExclusions() {
+         checker.check(coordinates("a", "b"), new HashSet<>(), new HashSet<>());
+-        assertThat(checker.getViolations()).isEmpty();
++        assertThat(checker.getViolations()).isEmpty(, () -> "Add assertion message");
+     }
+ 
+     @Test
+@@ -69,7 +69,7 @@ public class ExclusionCheckerTest {
+         Coordinates artifact = coordinates("a", "b");
+         HashSet<Coordinates> actualDependencies = new HashSet<>();
+         checker.check(artifact, new HashSet<>(Collections.singletonList(coordinates("p", "m"))), actualDependencies);
+-        assertThat(checker.getViolations()).containsEntry(artifact, Collections.singletonList(coordinates("p", "m")));
++        assertThat(checker.getViolations()).containsEntry(artifact, Collections.singletonList(coordinates("p", "m")), () -> "Add assertion message");
+     }
+ 
+     @Test
+@@ -82,7 +82,7 @@ public class ExclusionCheckerTest {
+ 
+         checker.check(artifact, excludes, actualDependencies);
+ 
+-        assertThat(checker.getViolations()).isEmpty();
++        assertThat(checker.getViolations()).isEmpty(, () -> "Add assertion message");
+     }
+ 
+     @Test
+@@ -97,6 +97,6 @@ public class ExclusionCheckerTest {
+ 
+         checker.check(artifact, excludes, actualDependencies);
+ 
+-        assertThat(checker.getViolations()).isEmpty();
++        assertThat(checker.getViolations()).isEmpty(, () -> "Add assertion message");
+     }
+-}
++}
+\ No newline at end of file
+diff --git a/src/test/java/org/apache/maven/plugins/dependency/fromConfiguration/TestUnpackMojo.java b/src/test/java/org/apache/maven/plugins/dependency/fromConfiguration/TestUnpackMojo.java
+index 66614da7..a1f6db25 100644
+--- a/src/test/java/org/apache/maven/plugins/dependency/fromConfiguration/TestUnpackMojo.java
++++ b/src/test/java/org/apache/maven/plugins/dependency/fromConfiguration/TestUnpackMojo.java
+@@ -96,12 +96,12 @@ public class TestUnpackMojo extends AbstractDependencyMojoTestCase {
+         mojo.setArtifactItems(list);
+ 
+         ArtifactItem result = getSingleArtifactItem(false);
+-        assertEquals(mojo.getOutputDirectory(), result.getOutputDirectory());
++        assertEquals(mojo.getOutputDirectory(), result.getOutputDirectory(), () -> "Add assertion message");
+ 
+         File output = new File(mojo.getOutputDirectory(), "override");
+         item.setOutputDirectory(output);
+         result = getSingleArtifactItem(false);
+-        assertEquals(output, result.getOutputDirectory());
++        assertEquals(output, result.getOutputDirectory(), () -> "Add assertion message");
+     }
+ 
+     public void assertMarkerFiles(Collection<ArtifactItem> items, boolean exist) {
+@@ -240,7 +240,7 @@ public class TestUnpackMojo extends AbstractDependencyMojoTestCase {
+ 
+         mojo.execute();
+         assertMarkerFile(true, item);
+-        assertEquals("2.0-SNAPSHOT", item.getVersion());
++        assertEquals("2.0-SNAPSHOT", item.getVersion(), () -> "Add assertion message");
+     }
+ 
+     public void testMissingVersionFromDependenciesWithClassifier() throws Exception {
+@@ -260,7 +260,7 @@ public class TestUnpackMojo extends AbstractDependencyMojoTestCase {
+ 
+         mojo.execute();
+         assertMarkerFile(true, item);
+-        assertEquals("2.1", item.getVersion());
++        assertEquals("2.1", item.getVersion(), () -> "Add assertion message");
+     }
+ 
+     public List<Dependency> getDependencyMgtList(ArtifactItem item) {
+@@ -312,7 +312,7 @@ public class TestUnpackMojo extends AbstractDependencyMojoTestCase {
+ 
+         mojo.execute();
+         assertMarkerFile(true, item);
+-        assertEquals("3.0-SNAPSHOT", item.getVersion());
++        assertEquals("3.0-SNAPSHOT", item.getVersion(), () -> "Add assertion message");
+     }
+ 
+     public void testMissingVersionFromDependencyMgtWithClassifier() throws Exception {
+@@ -354,7 +354,7 @@ public class TestUnpackMojo extends AbstractDependencyMojoTestCase {
+         mojo.execute();
+ 
+         assertMarkerFile(true, item);
+-        assertEquals("3.1", item.getVersion());
++        assertEquals("3.1", item.getVersion(), () -> "Add assertion message");
+     }
+ 
+     public void testArtifactNotFound() throws Exception {
+@@ -378,12 +378,11 @@ public class TestUnpackMojo extends AbstractDependencyMojoTestCase {
+         list.add(item);
+         mojo.setArtifactItems(list);
+ 
+-        try {
+-            mojo.execute();
+-            fail("ExpectedException");
+-        } catch (MojoExecutionException e) {
+-            assertEquals("Unable to find/resolve artifact.", e.getMessage());
+-        }
++        assertThrows(MojoExecutionException e,
++        		() -> {
++        			mojo.execute();
++        			fail("ExpectedException");
++        		});
+     }
+ 
+     public void testNoArtifactItems() {
+@@ -391,14 +390,14 @@ public class TestUnpackMojo extends AbstractDependencyMojoTestCase {
+             mojo.getProcessedArtifactItems(false);
+             fail("Expected Exception");
+         } catch (MojoExecutionException e) {
+-            assertEquals("There are no artifactItems configured.", e.getMessage());
++            assertEquals("There are no artifactItems configured.", e.getMessage(), () -> "Add assertion message");
+         }
+     }
+ 
+     public void testUnpackDontOverWriteReleases() throws Exception {
+         stubFactory.setCreateFiles(true);
+         Artifact release = stubFactory.getReleaseArtifact();
+-        assertTrue(release.getFile().setLastModified(System.currentTimeMillis() - 2000));
++        assertTrue(release.getFile().setLastModified(System.currentTimeMillis() - 2000), () -> "Add assertion message");
+ 
+         ArtifactItem item = new ArtifactItem(createArtifact(release));
+ 
+@@ -416,7 +415,7 @@ public class TestUnpackMojo extends AbstractDependencyMojoTestCase {
+     public void testUnpackDontOverWriteSnapshots() throws Exception {
+         stubFactory.setCreateFiles(true);
+         Artifact artifact = stubFactory.getSnapshotArtifact();
+-        assertTrue(artifact.getFile().setLastModified(System.currentTimeMillis() - 2000));
++        assertTrue(artifact.getFile().setLastModified(System.currentTimeMillis() - 2000), () -> "Add assertion message");
+ 
+         ArtifactItem item = new ArtifactItem(createArtifact(artifact));
+ 
+@@ -434,7 +433,7 @@ public class TestUnpackMojo extends AbstractDependencyMojoTestCase {
+     public void testUnpackOverWriteReleases() throws Exception {
+         stubFactory.setCreateFiles(true);
+         Artifact release = stubFactory.getReleaseArtifact();
+-        assertTrue(release.getFile().setLastModified(System.currentTimeMillis() - 2000));
++        assertTrue(release.getFile().setLastModified(System.currentTimeMillis() - 2000), () -> "Add assertion message");
+ 
+         ArtifactItem item = new ArtifactItem(createArtifact(release));
+ 
+@@ -452,7 +451,7 @@ public class TestUnpackMojo extends AbstractDependencyMojoTestCase {
+     public void testUnpackOverWriteSnapshot() throws Exception {
+         stubFactory.setCreateFiles(true);
+         Artifact artifact = stubFactory.getSnapshotArtifact();
+-        assertTrue(artifact.getFile().setLastModified(System.currentTimeMillis() - 2000));
++        assertTrue(artifact.getFile().setLastModified(System.currentTimeMillis() - 2000), () -> "Add assertion message");
+ 
+         ArtifactItem item = new ArtifactItem(createArtifact(artifact));
+ 
+@@ -480,7 +479,7 @@ public class TestUnpackMojo extends AbstractDependencyMojoTestCase {
+         mojo.setSilent(false);
+         stubFactory.setCreateFiles(true);
+         Artifact artifact = stubFactory.getSnapshotArtifact();
+-        assertTrue(artifact.getFile().setLastModified(now - 20000));
++        assertTrue(artifact.getFile().setLastModified(now - 20000), () -> "Add assertion message");
+ 
+         ArtifactItem item = new ArtifactItem(createArtifact(artifact));
+ 
+@@ -496,14 +495,14 @@ public class TestUnpackMojo extends AbstractDependencyMojoTestCase {
+         // go back 30 more seconds for linux
+         time -= 30000;
+         // set to known value
+-        assertTrue(unpackedFile.setLastModified(time));
++        assertTrue(unpackedFile.setLastModified(time), () -> "Add assertion message");
+         // set source to be newer about some seconds,
+         // especially on macOS it shouldn't be smaller than 16s in order to mitigate flapping test
+-        assertTrue(artifact.getFile().setLastModified(time + 16000));
++        assertTrue(artifact.getFile().setLastModified(time + 16000), () -> "Add assertion message");
+ 
+         // manually set markerfile (must match getMarkerFile in DefaultMarkerFileHandler)
+         File marker = new File(mojo.getMarkersDirectory(), artifact.getId().replace(':', '-') + ".marker");
+-        assertTrue(marker.setLastModified(time));
++        assertTrue(marker.setLastModified(time), () -> "Add assertion message");
+ 
+         mojo.execute();
+ 
+@@ -582,4 +581,4 @@ public class TestUnpackMojo extends AbstractDependencyMojoTestCase {
+                 item.getGroupId(), item.getArtifactId(), item.getVersion(), null, item.getType(), classifier);
+         return item;
+     }
+-}
++}
+\ No newline at end of file
+diff --git a/src/test/java/org/apache/maven/plugins/dependency/utils/filters/TestDestFileFilter.java b/src/test/java/org/apache/maven/plugins/dependency/utils/filters/TestDestFileFilter.java
+index 2c52f5f3..1bf258d7 100644
+--- a/src/test/java/org/apache/maven/plugins/dependency/utils/filters/TestDestFileFilter.java
++++ b/src/test/java/org/apache/maven/plugins/dependency/utils/filters/TestDestFileFilter.java
+@@ -95,24 +95,24 @@ public class TestDestFileFilter extends TestCase {
+         DestFileFilter filter = new DestFileFilter(outputFolder);
+         Artifact artifact = fact.getReleaseArtifact();
+ 
+-        assertTrue(filter.isArtifactIncluded(artifact));
++        assertTrue(filter.isArtifactIncluded(artifact), () -> "Add assertion message");
+         createFile(artifact);
+-        assertFalse(filter.isArtifactIncluded(artifact));
++        assertFalse(filter.isArtifactIncluded(artifact), () -> "Add assertion message");
+ 
+         filter.setOverWriteReleases(true);
+-        assertTrue(filter.isArtifactIncluded(artifact));
++        // Line removed due to Duplicate Assert: assertTrue(filter.isArtifactIncluded(artifact), () -> "Add assertion message");
+     }
+ 
+     public void testDestFileSnapshot() throws IOException, ArtifactFilterException {
+         DestFileFilter filter = new DestFileFilter(outputFolder);
+         Artifact artifact = fact.getSnapshotArtifact();
+ 
+-        assertTrue(filter.isArtifactIncluded(artifact));
++        assertTrue(filter.isArtifactIncluded(artifact), () -> "Add assertion message");
+         createFile(artifact);
+-        assertFalse(filter.isArtifactIncluded(artifact));
++        assertFalse(filter.isArtifactIncluded(artifact), () -> "Add assertion message");
+ 
+         filter.setOverWriteSnapshots(true);
+-        assertTrue(filter.isArtifactIncluded(artifact));
++        // Line removed due to Duplicate Assert: assertTrue(filter.isArtifactIncluded(artifact), () -> "Add assertion message");
+     }
+ 
+     public void testDestFileStripVersion() throws IOException, ArtifactFilterException {
+@@ -120,12 +120,12 @@ public class TestDestFileFilter extends TestCase {
+         Artifact artifact = fact.getSnapshotArtifact();
+         filter.setRemoveVersion(true);
+ 
+-        assertTrue(filter.isArtifactIncluded(artifact));
++        assertTrue(filter.isArtifactIncluded(artifact), () -> "Add assertion message");
+         createFile(artifact, false, false, true);
+-        assertFalse(filter.isArtifactIncluded(artifact));
++        assertFalse(filter.isArtifactIncluded(artifact), () -> "Add assertion message");
+ 
+         filter.setOverWriteSnapshots(true);
+-        assertTrue(filter.isArtifactIncluded(artifact));
++        // Line removed due to Duplicate Assert: assertTrue(filter.isArtifactIncluded(artifact), () -> "Add assertion message");
+     }
+ 
+     public void testDestFileStripClassifier() throws IOException, ArtifactFilterException {
+@@ -133,12 +133,12 @@ public class TestDestFileFilter extends TestCase {
+         Artifact artifact = fact.getSnapshotArtifact();
+         filter.setRemoveClassifier(true);
+ 
+-        assertTrue(filter.isArtifactIncluded(artifact));
++        assertTrue(filter.isArtifactIncluded(artifact), () -> "Add assertion message");
+         createFile(artifact, false, false, false, true);
+-        assertFalse(filter.isArtifactIncluded(artifact));
++        assertFalse(filter.isArtifactIncluded(artifact), () -> "Add assertion message");
+ 
+         filter.setOverWriteSnapshots(true);
+-        assertTrue(filter.isArtifactIncluded(artifact));
++        // Line removed due to Duplicate Assert: assertTrue(filter.isArtifactIncluded(artifact), () -> "Add assertion message");
+     }
+ 
+     public void testDestFileSubPerArtifact() throws IOException, ArtifactFilterException {
+@@ -146,12 +146,12 @@ public class TestDestFileFilter extends TestCase {
+         Artifact artifact = fact.getSnapshotArtifact();
+         filter.setUseSubDirectoryPerArtifact(true);
+ 
+-        assertTrue(filter.isArtifactIncluded(artifact));
++        assertTrue(filter.isArtifactIncluded(artifact), () -> "Add assertion message");
+         createFile(artifact, true, false, false);
+-        assertFalse(filter.isArtifactIncluded(artifact));
++        assertFalse(filter.isArtifactIncluded(artifact), () -> "Add assertion message");
+ 
+         filter.setOverWriteSnapshots(true);
+-        assertTrue(filter.isArtifactIncluded(artifact));
++        // Line removed due to Duplicate Assert: assertTrue(filter.isArtifactIncluded(artifact), () -> "Add assertion message");
+     }
+ 
+     public void testDestFileSubPerType() throws MojoExecutionException, IOException, ArtifactFilterException {
+@@ -159,12 +159,12 @@ public class TestDestFileFilter extends TestCase {
+         Artifact artifact = fact.getSnapshotArtifact();
+         filter.setUseSubDirectoryPerType(true);
+ 
+-        assertTrue(filter.isArtifactIncluded(artifact));
++        assertTrue(filter.isArtifactIncluded(artifact), () -> "Add assertion message");
+         createFile(artifact, false, true, false);
+-        assertFalse(filter.isArtifactIncluded(artifact));
++        assertFalse(filter.isArtifactIncluded(artifact), () -> "Add assertion message");
+ 
+         filter.setOverWriteSnapshots(true);
+-        assertTrue(filter.isArtifactIncluded(artifact));
++        // Line removed due to Duplicate Assert: assertTrue(filter.isArtifactIncluded(artifact), () -> "Add assertion message");
+     }
+ 
+     public void testDestFileOverwriteIfNewer() throws MojoExecutionException, IOException, ArtifactFilterException {
+@@ -173,59 +173,59 @@ public class TestDestFileFilter extends TestCase {
+         fact.setCreateFiles(true);
+         Artifact artifact = fact.getSnapshotArtifact();
+         File artifactFile = artifact.getFile();
+-        assertTrue(artifactFile.setLastModified(artifactFile.lastModified()));
++        assertTrue(artifactFile.setLastModified(artifactFile.lastModified()), () -> "Add assertion message");
+         filter.setOverWriteIfNewer(true);
+ 
+         // should pass because the file doesn't exist yet.
+-        assertTrue(filter.isArtifactIncluded(artifact));
++        assertTrue(filter.isArtifactIncluded(artifact), () -> "Add assertion message");
+ 
+         // create the file in the destination
+         File destFile = createFile(artifact, false, false, false);
+ 
+         // set the last modified timestamp to be older than the source
+-        assertTrue(destFile.setLastModified(artifactFile.lastModified() - 1000));
+-        assertTrue(filter.isArtifactIncluded(artifact));
++        assertTrue(destFile.setLastModified(artifactFile.lastModified() - 1000), () -> "Add assertion message");
++        // Line removed due to Duplicate Assert: assertTrue(filter.isArtifactIncluded(artifact), () -> "Add assertion message");
+ 
+         // now set the last modified timestamp to be newer than the source
+-        assertTrue(destFile.setLastModified(artifactFile.lastModified() + 1000));
++        assertTrue(destFile.setLastModified(artifactFile.lastModified() + 1000), () -> "Add assertion message");
+ 
+-        assertFalse(filter.isArtifactIncluded(artifact));
++        assertFalse(filter.isArtifactIncluded(artifact), () -> "Add assertion message");
+     }
+ 
+     public void testGettersSetters() {
+         DestFileFilter filter = new DestFileFilter(null);
+-        assertNull(filter.getOutputFileDirectory());
++        assertNull(filter.getOutputFileDirectory(), () -> "Add assertion message");
+         filter.setOutputFileDirectory(outputFolder);
+-        assertSame(outputFolder, filter.getOutputFileDirectory());
++        assertSame(outputFolder, filter.getOutputFileDirectory(), () -> "Add assertion message");
+ 
+         filter.setOverWriteIfNewer(true);
+-        assertTrue(filter.isOverWriteIfNewer());
++        assertTrue(filter.isOverWriteIfNewer(), () -> "Add assertion message");
+         filter.setOverWriteIfNewer(false);
+-        assertFalse(filter.isOverWriteIfNewer());
++        assertFalse(filter.isOverWriteIfNewer(), () -> "Add assertion message");
+ 
+         filter.setOverWriteReleases(true);
+-        assertTrue(filter.isOverWriteReleases());
++        assertTrue(filter.isOverWriteReleases(), () -> "Add assertion message");
+         filter.setOverWriteReleases(false);
+-        assertFalse(filter.isOverWriteReleases());
++        assertFalse(filter.isOverWriteReleases(), () -> "Add assertion message");
+ 
+         filter.setOverWriteSnapshots(true);
+-        assertTrue(filter.isOverWriteSnapshots());
++        assertTrue(filter.isOverWriteSnapshots(), () -> "Add assertion message");
+         filter.setOverWriteSnapshots(false);
+-        assertFalse(filter.isOverWriteSnapshots());
++        assertFalse(filter.isOverWriteSnapshots(), () -> "Add assertion message");
+ 
+         filter.setUseSubDirectoryPerArtifact(true);
+-        assertTrue(filter.isUseSubDirectoryPerArtifact());
++        assertTrue(filter.isUseSubDirectoryPerArtifact(), () -> "Add assertion message");
+         filter.setUseSubDirectoryPerArtifact(false);
+-        assertFalse(filter.isUseSubDirectoryPerArtifact());
++        assertFalse(filter.isUseSubDirectoryPerArtifact(), () -> "Add assertion message");
+ 
+         filter.setUseSubDirectoryPerType(true);
+-        assertTrue(filter.isUseSubDirectoryPerType());
++        assertTrue(filter.isUseSubDirectoryPerType(), () -> "Add assertion message");
+         filter.setUseSubDirectoryPerType(false);
+-        assertFalse(filter.isUseSubDirectoryPerType());
++        assertFalse(filter.isUseSubDirectoryPerType(), () -> "Add assertion message");
+ 
+         filter.setRemoveVersion(true);
+-        assertTrue(filter.isRemoveVersion());
++        assertTrue(filter.isRemoveVersion(), () -> "Add assertion message");
+         filter.setRemoveVersion(false);
+-        assertFalse(filter.isRemoveVersion());
++        assertFalse(filter.isRemoveVersion(), () -> "Add assertion message");
+     }
+-}
++}
+\ No newline at end of file
+diff --git a/src/test/java/org/apache/maven/plugins/dependency/utils/filters/TestMarkerFileFilter.java b/src/test/java/org/apache/maven/plugins/dependency/utils/filters/TestMarkerFileFilter.java
+index 717b1942..1558d0be 100644
+--- a/src/test/java/org/apache/maven/plugins/dependency/utils/filters/TestMarkerFileFilter.java
++++ b/src/test/java/org/apache/maven/plugins/dependency/utils/filters/TestMarkerFileFilter.java
+@@ -64,12 +64,13 @@ public class TestMarkerFileFilter extends TestCase {
+ 
+         MarkerFileFilter filter = new MarkerFileFilter(true, true, false, new DefaultFileMarkerHandler(outputFolder));
+         Set<Artifact> result = filter.filter(artifacts);
+-        assertEquals(2, result.size());
++        Integer magicNumber89220126 = 2; 	 // It is highly advisible to rename this variable to something that better encapsulate its meaning. 
++        assertEquals(magicNumber89220126, result.size(), () -> "Add assertion message");
+ 
+         filter.setOverWriteReleases(false);
+         filter.setOverWriteSnapshots(false);
+         result = filter.filter(artifacts);
+-        assertEquals(2, result.size());
++        // Line removed due to Duplicate Assert: assertEquals(2, result.size(), () -> "Add assertion message");
+     }
+ 
+     public void testMarkerSnapshots() throws ArtifactFilterException, MojoExecutionException, IOException {
+@@ -79,14 +80,14 @@ public class TestMarkerFileFilter extends TestCase {
+ 
+         MarkerFileFilter filter = new MarkerFileFilter(true, false, false, new DefaultFileMarkerHandler(outputFolder));
+         Set<Artifact> result = filter.filter(artifacts);
+-        assertEquals(1, result.size());
++        assertEquals(1, result.size(), () -> "Add assertion message");
+ 
+         filter.setOverWriteSnapshots(true);
+         result = filter.filter(artifacts);
+-        assertEquals(2, result.size());
+-        assertTrue(handler.clearMarker());
++        assertEquals(2, result.size(), () -> "Add assertion message");
++        assertTrue(handler.clearMarker(), () -> "Add assertion message");
+         FileUtils.deleteDirectory(outputFolder);
+-        assertFalse(outputFolder.exists());
++        assertFalse(outputFolder.exists(), () -> "Add assertion message");
+     }
+ 
+     public void testMarkerRelease() throws IOException, ArtifactFilterException, MojoExecutionException {
+@@ -95,15 +96,15 @@ public class TestMarkerFileFilter extends TestCase {
+ 
+         MarkerFileFilter filter = new MarkerFileFilter(false, false, false, new DefaultFileMarkerHandler(outputFolder));
+         Set<Artifact> result = filter.filter(artifacts);
+-        assertEquals(1, result.size());
++        assertEquals(1, result.size(), () -> "Add assertion message");
+ 
+         filter.setOverWriteReleases(true);
+         result = filter.filter(artifacts);
+-        assertEquals(2, result.size());
++        assertEquals(2, result.size(), () -> "Add assertion message");
+ 
+-        assertTrue(handler.clearMarker());
++        assertTrue(handler.clearMarker(), () -> "Add assertion message");
+         FileUtils.deleteDirectory(outputFolder);
+-        assertFalse(outputFolder.exists());
++        assertFalse(outputFolder.exists(), () -> "Add assertion message");
+     }
+ 
+     public void testMarkerTimestamp() throws IOException, MojoExecutionException, ArtifactFilterException {
+@@ -117,42 +118,42 @@ public class TestMarkerFileFilter extends TestCase {
+         tempArtifacts.add(release);
+         DefaultFileMarkerHandler handler = new DefaultFileMarkerHandler(snap, outputFolder);
+         handler.setMarker();
+-        assertTrue(snap.getFile().setLastModified(snap.getFile().lastModified() + 1500));
++        assertTrue(snap.getFile().setLastModified(snap.getFile().lastModified() + 1500), () -> "Add assertion message");
+         MarkerFileFilter filter = new MarkerFileFilter(false, false, true, new DefaultFileMarkerHandler(outputFolder));
+         Set<Artifact> result = filter.filter(tempArtifacts);
+-        assertEquals(2, result.size());
++        assertEquals(2, result.size(), () -> "Add assertion message");
+ 
+         // update marker; filter won't include snapshot because timestamps equal
+         handler.setMarker();
+         result = filter.filter(tempArtifacts);
+-        assertEquals(1, result.size());
++        assertEquals(1, result.size(), () -> "Add assertion message");
+ 
+         // filter won't include snapshot because it is older than marker
+-        assertTrue(snap.getFile().setLastModified(snap.getFile().lastModified() - 10000));
++        assertTrue(snap.getFile().setLastModified(snap.getFile().lastModified() - 10000), () -> "Add assertion message");
+ 
+         result = filter.filter(tempArtifacts);
+-        assertEquals(1, result.size());
++        // Line removed due to Duplicate Assert: assertEquals(1, result.size(), () -> "Add assertion message");
+ 
+-        assertTrue(handler.clearMarker());
+-        assertFalse(handler.isMarkerSet());
++        assertTrue(handler.clearMarker(), () -> "Add assertion message");
++        assertFalse(handler.isMarkerSet(), () -> "Add assertion message");
+         snap.getFile().delete();
+         release.getFile().delete();
+         FileUtils.deleteDirectory(outputFolder);
+-        assertFalse(outputFolder.exists());
++        assertFalse(outputFolder.exists(), () -> "Add assertion message");
+     }
+ 
+     public void testGettersSetters() {
+         MarkerFileFilter filter = new MarkerFileFilter(true, false, true, new DefaultFileMarkerHandler(outputFolder));
+-        assertTrue(filter.isOverWriteReleases());
+-        assertFalse(filter.isOverWriteSnapshots());
+-        assertTrue(filter.isOverWriteIfNewer());
++        assertTrue(filter.isOverWriteReleases(), () -> "Add assertion message");
++        assertFalse(filter.isOverWriteSnapshots(), () -> "Add assertion message");
++        assertTrue(filter.isOverWriteIfNewer(), () -> "Add assertion message");
+ 
+         filter.setOverWriteReleases(false);
+         filter.setOverWriteSnapshots(true);
+         filter.setOverWriteIfNewer(false);
+ 
+-        assertFalse(filter.isOverWriteReleases());
+-        assertTrue(filter.isOverWriteSnapshots());
+-        assertFalse(filter.isOverWriteIfNewer());
++        assertFalse(filter.isOverWriteReleases(), () -> "Add assertion message");
++        assertTrue(filter.isOverWriteSnapshots(), () -> "Add assertion message");
++        assertFalse(filter.isOverWriteIfNewer(), () -> "Add assertion message");
+     }
+-}
++}
+\ No newline at end of file
+diff --git a/src/test/java/org/apache/maven/plugins/dependency/utils/filters/TestResolveMarkerFileFilter.java b/src/test/java/org/apache/maven/plugins/dependency/utils/filters/TestResolveMarkerFileFilter.java
+index 25e62935..7bdb4453 100644
+--- a/src/test/java/org/apache/maven/plugins/dependency/utils/filters/TestResolveMarkerFileFilter.java
++++ b/src/test/java/org/apache/maven/plugins/dependency/utils/filters/TestResolveMarkerFileFilter.java
+@@ -68,8 +68,8 @@ public class TestResolveMarkerFileFilter extends TestCase {
+ 
+         ResolveFileFilter filter = new ResolveFileFilter(handler);
+ 
+-        assertTrue(filter.isArtifactIncluded(artifact));
++        assertTrue(filter.isArtifactIncluded(artifact), () -> "Add assertion message");
+         handler.setMarker();
+-        assertFalse(filter.isArtifactIncluded(artifact));
++        assertFalse(filter.isArtifactIncluded(artifact), () -> "Add assertion message");
+     }
+-}
++}
+\ No newline at end of file
+diff --git a/src/test/java/org/apache/maven/plugins/dependency/utils/markers/TestDefaultMarkerFileHandler.java b/src/test/java/org/apache/maven/plugins/dependency/utils/markers/TestDefaultMarkerFileHandler.java
+index c9eb2d4a..c4506aec 100644
+--- a/src/test/java/org/apache/maven/plugins/dependency/utils/markers/TestDefaultMarkerFileHandler.java
++++ b/src/test/java/org/apache/maven/plugins/dependency/utils/markers/TestDefaultMarkerFileHandler.java
+@@ -70,42 +70,42 @@ public class TestDefaultMarkerFileHandler extends TestCase {
+ 
+     public void testSetMarker() throws MojoExecutionException {
+         DefaultFileMarkerHandler handler = new DefaultFileMarkerHandler(artifacts.get(0), this.outputFolder);
+-        assertFalse(handler.isMarkerSet());
++        assertFalse(handler.isMarkerSet(), () -> "Add assertion message");
+         handler.setMarker();
+-        assertTrue(handler.isMarkerSet());
++        assertTrue(handler.isMarkerSet(), () -> "Add assertion message");
+         handler.clearMarker();
+-        assertFalse(handler.isMarkerSet());
++        // Line removed due to Duplicate Assert: assertFalse(handler.isMarkerSet(), () -> "Add assertion message");
+ 
+         handler.setMarker();
+-        assertTrue(handler.isMarkerSet());
++        // Line removed due to Duplicate Assert: assertTrue(handler.isMarkerSet(), () -> "Add assertion message");
+         handler.setMarker();
+-        assertTrue(handler.isMarkerSet());
++        // Line removed due to Duplicate Assert: assertTrue(handler.isMarkerSet(), () -> "Add assertion message");
+ 
+         handler.clearMarker();
+-        assertFalse(handler.isMarkerSet());
++        // Line removed due to Duplicate Assert: assertFalse(handler.isMarkerSet(), () -> "Add assertion message");
+         handler.clearMarker();
+-        assertFalse(handler.isMarkerSet());
++        // Line removed due to Duplicate Assert: assertFalse(handler.isMarkerSet(), () -> "Add assertion message");
+     }
+ 
+     public void testMarkerFile() throws MojoExecutionException, IOException {
+         DefaultFileMarkerHandler handler = new DefaultFileMarkerHandler(artifacts.get(0), this.outputFolder);
+ 
+         File handle = handler.getMarkerFile();
+-        assertFalse(handle.exists());
+-        assertFalse(handler.isMarkerSet());
++        assertFalse(handle.exists(), () -> "Add assertion message");
++        assertFalse(handler.isMarkerSet(), () -> "Add assertion message");
+ 
+         handler.setMarker();
+-        assertTrue(handler.isMarkerSet());
+-        assertTrue(handle.exists());
++        assertTrue(handler.isMarkerSet(), () -> "Add assertion message");
++        assertTrue(handle.exists(), () -> "Add assertion message");
+ 
+         handle.delete();
+-        assertFalse(handler.isMarkerSet());
++        // Line removed due to Duplicate Assert: assertFalse(handler.isMarkerSet(), () -> "Add assertion message");
+ 
+         handle.createNewFile();
+-        assertTrue(handler.isMarkerSet());
++        // Line removed due to Duplicate Assert: assertTrue(handler.isMarkerSet(), () -> "Add assertion message");
+ 
+         handler.clearMarker();
+-        assertFalse(handle.exists());
++        // Line removed due to Duplicate Assert: assertFalse(handle.exists(), () -> "Add assertion message");
+     }
+ 
+     public void testMarkerTimeStamp() throws MojoExecutionException, IOException, InterruptedException {
+@@ -115,19 +115,19 @@ public class TestDefaultMarkerFileHandler extends TestCase {
+         Artifact theArtifact = artifacts.get(0);
+         theArtifact.setFile(theFile);
+         DefaultFileMarkerHandler handler = new DefaultFileMarkerHandler(theArtifact, this.outputFolder);
+-        assertFalse(handler.isMarkerSet());
++        assertFalse(handler.isMarkerSet(), () -> "Add assertion message");
+         // if the marker is not set, assume it is infinately older than the
+         // artifact.
+-        assertTrue(handler.isMarkerOlder(theArtifact));
++        assertTrue(handler.isMarkerOlder(theArtifact), () -> "Add assertion message");
+         handler.setMarker();
+-        assertFalse(handler.isMarkerOlder(theArtifact));
++        assertFalse(handler.isMarkerOlder(theArtifact), () -> "Add assertion message");
+ 
+-        assertTrue(theFile.setLastModified(theFile.lastModified() + 60000));
+-        assertTrue(handler.isMarkerOlder(theArtifact));
++        assertTrue(theFile.setLastModified(theFile.lastModified() + 60000), () -> "Add assertion message");
++        // Line removed due to Duplicate Assert: assertTrue(handler.isMarkerOlder(theArtifact), () -> "Add assertion message");
+ 
+         theFile.delete();
+         handler.clearMarker();
+-        assertFalse(handler.isMarkerSet());
++        // Line removed due to Duplicate Assert: assertFalse(handler.isMarkerSet(), () -> "Add assertion message");
+     }
+ 
+     public void testMarkerFileException() {
+@@ -143,13 +143,13 @@ public class TestDefaultMarkerFileHandler extends TestCase {
+ 
+     public void testGetterSetter() {
+         DefaultFileMarkerHandler handler = new DefaultFileMarkerHandler(null, null);
+-        assertNull(handler.getArtifact());
++        assertNull(handler.getArtifact(), () -> "Add assertion message");
+         handler.setArtifact(artifacts.get(0));
+-        assertSame(artifacts.get(0), handler.getArtifact());
++        assertSame(artifacts.get(0), handler.getArtifact(), () -> "Add assertion message");
+ 
+-        assertNull(handler.getMarkerFilesDirectory());
++        assertNull(handler.getMarkerFilesDirectory(), () -> "Add assertion message");
+         handler.setMarkerFilesDirectory(outputFolder);
+-        assertSame(outputFolder, handler.getMarkerFilesDirectory());
++        assertSame(outputFolder, handler.getMarkerFilesDirectory(), () -> "Add assertion message");
+     }
+ 
+     public void testNullParent() throws MojoExecutionException {
+@@ -159,8 +159,8 @@ public class TestDefaultMarkerFileHandler extends TestCase {
+         DefaultFileMarkerHandler handler = new DefaultFileMarkerHandler(null, null);
+         handler.setArtifact(artifacts.get(0));
+         handler.setMarker();
+-        assertTrue(handler.isMarkerSet());
++        assertTrue(handler.isMarkerSet(), () -> "Add assertion message");
+         handler.clearMarker();
+-        assertFalse(handler.isMarkerSet());
++        assertFalse(handler.isMarkerSet(), () -> "Add assertion message");
+     }
+-}
++}
+\ No newline at end of file
+diff --git a/src/test/java/org/apache/maven/plugins/dependency/utils/markers/TestSourcesMarkerFileHandler.java b/src/test/java/org/apache/maven/plugins/dependency/utils/markers/TestSourcesMarkerFileHandler.java
+index 0a498e3a..f12e2c59 100644
+--- a/src/test/java/org/apache/maven/plugins/dependency/utils/markers/TestSourcesMarkerFileHandler.java
++++ b/src/test/java/org/apache/maven/plugins/dependency/utils/markers/TestSourcesMarkerFileHandler.java
+@@ -72,38 +72,38 @@ public class TestSourcesMarkerFileHandler extends TestCase {
+ 
+     public void testSetMarkerResolved() throws MojoExecutionException {
+         DefaultFileMarkerHandler handler = new SourcesFileMarkerHandler(artifacts.get(0), this.outputFolder, true);
+-        assertFalse(handler.isMarkerSet());
++        assertFalse(handler.isMarkerSet(), () -> "Add assertion message");
+         handler.setMarker();
+-        assertTrue(handler.isMarkerSet());
++        assertTrue(handler.isMarkerSet(), () -> "Add assertion message");
+         handler.clearMarker();
+-        assertFalse(handler.isMarkerSet());
++        // Line removed due to Duplicate Assert: assertFalse(handler.isMarkerSet(), () -> "Add assertion message");
+ 
+         handler.setMarker();
+         handler.setMarker();
+-        assertTrue(handler.isMarkerSet());
++        // Line removed due to Duplicate Assert: assertTrue(handler.isMarkerSet(), () -> "Add assertion message");
+ 
+         handler.clearMarker();
+         handler.clearMarker();
+         outputFolder.delete();
+-        assertFalse(outputFolder.exists());
++        assertFalse(outputFolder.exists(), () -> "Add assertion message");
+     }
+ 
+     public void testSetMarkerUnresolved() throws MojoExecutionException {
+         DefaultFileMarkerHandler handler = new SourcesFileMarkerHandler(artifacts.get(0), this.outputFolder, false);
+-        assertFalse(handler.isMarkerSet());
++        assertFalse(handler.isMarkerSet(), () -> "Add assertion message");
+         handler.setMarker();
+-        assertTrue(handler.isMarkerSet());
++        assertTrue(handler.isMarkerSet(), () -> "Add assertion message");
+         handler.clearMarker();
+-        assertFalse(handler.isMarkerSet());
++        // Line removed due to Duplicate Assert: assertFalse(handler.isMarkerSet(), () -> "Add assertion message");
+ 
+         handler.setMarker();
+         handler.setMarker();
+-        assertTrue(handler.isMarkerSet());
++        // Line removed due to Duplicate Assert: assertTrue(handler.isMarkerSet(), () -> "Add assertion message");
+ 
+         handler.clearMarker();
+         handler.clearMarker();
+         outputFolder.delete();
+-        assertFalse(outputFolder.exists());
++        assertFalse(outputFolder.exists(), () -> "Add assertion message");
+     }
+ 
+     public void testBothMarkers() throws MojoExecutionException {
+@@ -111,14 +111,14 @@ public class TestSourcesMarkerFileHandler extends TestCase {
+         DefaultFileMarkerHandler handler2 = new SourcesFileMarkerHandler(artifacts.get(1), this.outputFolder, false);
+ 
+         handler.setMarker();
+-        assertTrue(handler.isMarkerSet());
+-        assertTrue(handler2.isMarkerSet());
++        assertTrue(handler.isMarkerSet(), () -> "Add assertion message");
++        assertTrue(handler2.isMarkerSet(), () -> "Add assertion message");
+ 
+         handler2.clearMarker();
+-        assertFalse(handler.isMarkerSet());
+-        assertFalse(handler2.isMarkerSet());
++        assertFalse(handler.isMarkerSet(), () -> "Add assertion message");
++        assertFalse(handler2.isMarkerSet(), () -> "Add assertion message");
+         outputFolder.delete();
+-        assertFalse(outputFolder.exists());
++        assertFalse(outputFolder.exists(), () -> "Add assertion message");
+     }
+ 
+     public void testMarkerFile() throws MojoExecutionException, IOException {
+@@ -127,53 +127,53 @@ public class TestSourcesMarkerFileHandler extends TestCase {
+ 
+         File handle = handler.getMarkerFile();
+         File handle2 = handler2.getMarkerFile();
+-        assertFalse(handle.exists());
+-        assertFalse(handler.isMarkerSet());
+-        assertFalse(handle2.exists());
+-        assertFalse(handler2.isMarkerSet());
++        assertFalse(handle.exists(), () -> "Add assertion message");
++        assertFalse(handler.isMarkerSet(), () -> "Add assertion message");
++        assertFalse(handle2.exists(), () -> "Add assertion message");
++        assertFalse(handler2.isMarkerSet(), () -> "Add assertion message");
+ 
+         // if either file exists, the marker is set
+         handler.setMarker();
+-        assertTrue(handler.isMarkerSet());
+-        assertTrue(handle.exists());
+-        assertTrue(handler2.isMarkerSet());
+-        assertFalse(handle2.exists());
++        assertTrue(handler.isMarkerSet(), () -> "Add assertion message");
++        assertTrue(handle.exists(), () -> "Add assertion message");
++        assertTrue(handler2.isMarkerSet(), () -> "Add assertion message");
++        // Line removed due to Duplicate Assert: assertFalse(handle2.exists(), () -> "Add assertion message");
+ 
+         // if either file exists, the marker is set
+         // setting 1 will clear the other marker
+         handler2.setMarker();
+-        assertTrue(handler.isMarkerSet());
+-        assertFalse(handle.exists());
+-        assertTrue(handler2.isMarkerSet());
+-        assertTrue(handle2.exists());
++        // Line removed due to Duplicate Assert: assertTrue(handler.isMarkerSet(), () -> "Add assertion message");
++        // Line removed due to Duplicate Assert: assertFalse(handle.exists(), () -> "Add assertion message");
++        // Line removed due to Duplicate Assert: assertTrue(handler2.isMarkerSet(), () -> "Add assertion message");
++        assertTrue(handle2.exists(), () -> "Add assertion message");
+ 
+         // reset file for next test
+         handle.createNewFile();
+ 
+         // only delete one, should be still true
+         handle2.delete();
+-        assertTrue(handler.isMarkerSet());
+-        assertTrue(handler2.isMarkerSet());
++        // Line removed due to Duplicate Assert: assertTrue(handler.isMarkerSet(), () -> "Add assertion message");
++        // Line removed due to Duplicate Assert: assertTrue(handler2.isMarkerSet(), () -> "Add assertion message");
+ 
+         // delete the 2nd, should be false.
+         handle.delete();
+-        assertFalse(handler.isMarkerSet());
+-        assertFalse(handler2.isMarkerSet());
++        // Line removed due to Duplicate Assert: assertFalse(handler.isMarkerSet(), () -> "Add assertion message");
++        // Line removed due to Duplicate Assert: assertFalse(handler2.isMarkerSet(), () -> "Add assertion message");
+ 
+         handle.createNewFile();
+-        assertTrue(handler.isMarkerSet());
+-        assertTrue(handler2.isMarkerSet());
++        // Line removed due to Duplicate Assert: assertTrue(handler.isMarkerSet(), () -> "Add assertion message");
++        // Line removed due to Duplicate Assert: assertTrue(handler2.isMarkerSet(), () -> "Add assertion message");
+ 
+         handler.clearMarker();
+-        assertFalse(handle.exists());
++        // Line removed due to Duplicate Assert: assertFalse(handle.exists(), () -> "Add assertion message");
+         handler2.clearMarker();
+-        assertFalse(handle2.exists());
++        // Line removed due to Duplicate Assert: assertFalse(handle2.exists(), () -> "Add assertion message");
+ 
+         handle.delete();
+         handle2.delete();
+ 
+         outputFolder.delete();
+-        assertFalse(outputFolder.exists());
++        assertFalse(outputFolder.exists(), () -> "Add assertion message");
+     }
+ 
+     public void testMarkerTimeStampResolved() throws MojoExecutionException, IOException, InterruptedException {
+@@ -233,9 +233,9 @@ public class TestSourcesMarkerFileHandler extends TestCase {
+ 
+     public void testMarkerFileResolvedSetter() {
+         SourcesFileMarkerHandler handler = new SourcesFileMarkerHandler(null, null, true);
+-        assertTrue(handler.isResolved());
++        assertTrue(handler.isResolved(), () -> "Add assertion message");
+         handler.setResolved(false);
+-        assertFalse(handler.isResolved());
++        assertFalse(handler.isResolved(), () -> "Add assertion message");
+     }
+ 
+     public void testNullParent() throws MojoExecutionException {
+@@ -245,9 +245,9 @@ public class TestSourcesMarkerFileHandler extends TestCase {
+         DefaultFileMarkerHandler handler = new SourcesFileMarkerHandler(null, null, false);
+         handler.setArtifact(artifacts.get(0));
+         handler.setMarker();
+-        assertTrue(handler.isMarkerSet());
++        assertTrue(handler.isMarkerSet(), () -> "Add assertion message");
+         handler.clearMarker();
+-        assertFalse(handler.isMarkerSet());
++        assertFalse(handler.isMarkerSet(), () -> "Add assertion message");
+     }
+ 
+     public void testNullParentResolved() throws MojoExecutionException {
+@@ -257,8 +257,8 @@ public class TestSourcesMarkerFileHandler extends TestCase {
+         DefaultFileMarkerHandler handler = new SourcesFileMarkerHandler(null, null, true);
+         handler.setArtifact(artifacts.get(0));
+         handler.setMarker();
+-        assertTrue(handler.isMarkerSet());
++        assertTrue(handler.isMarkerSet(), () -> "Add assertion message");
+         handler.clearMarker();
+-        assertFalse(handler.isMarkerSet());
++        assertFalse(handler.isMarkerSet(), () -> "Add assertion message");
+     }
+-}
++}
+\ No newline at end of file
