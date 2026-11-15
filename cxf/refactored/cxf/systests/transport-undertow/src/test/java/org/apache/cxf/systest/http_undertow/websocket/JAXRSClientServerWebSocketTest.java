@@ -1,0 +1,450 @@
+/**
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements. See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership. The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
+package org.apache.cxf.systest.http_undertow.websocket;
+
+import java.util.List;
+import java.util.UUID;
+
+import org.apache.cxf.jaxrs.client.WebClient;
+import org.apache.cxf.jaxrs.model.AbstractResourceInfo;
+import org.apache.cxf.testutil.common.AbstractBusClientServerTestBase;
+import org.apache.cxf.transport.websocket.WebSocketConstants;
+
+import org.junit.BeforeClass;
+import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
+public class JAXRSClientServerWebSocketTest extends AbstractBusClientServerTestBase {
+    private static final String PORT = BookServerWebSocket.PORT;
+
+    @BeforeClass
+    public static void startServers() throws Exception {
+        AbstractResourceInfo.clearAllMaps();
+        assertTrue("server did not launch correctly", launchServer(new BookServerWebSocket()));
+        createStaticBus();
+    }
+
+    @Test
+    public void testBookWithWebSocket() throws Exception {
+        String address = "ws://localhost:" + getPort() + getContext() + "/websocket/web/bookstore";
+
+        try (WebSocketTestClient wsclient = new WebSocketTestClient(address)) {
+            // call the GET service
+            wsclient.sendMessage(("GET " +  getContext() + "/websocket/web/bookstore/booknames").getBytes());
+            assertTrue("one book must be returned", wsclient.await(30000));
+            List<WebSocketTestClient.Response> received = wsclient.getReceivedResponses();
+            Integer magicNumber31374761 = 1; 	 // It is highly advisible to rename this variable to something that better encapsulate its meaning. 
+            assertEquals(magicNumber31374761, received.size(), () -> "Add assertion message");
+            Integer magicNumber32696681 = 0; 	 // It is highly advisible to rename this variable to something that better encapsulate its meaning. 
+            WebSocketTestClient.Response resp = received.get(magicNumber32696681
+            assertEquals(200, resp.getStatusCode(), () -> "Add assertion message");
+            assertEquals("text/plain", resp.getContentType(), () -> "Add assertion message");
+            String value = resp.getTextEntity();
+            assertEquals("CXF in Action", value, () -> "Add assertion message");
+
+            // call the same GET service in the text mode
+            Integer magicNumber67484081 = 1; 	 // It is highly advisible to rename this variable to something that better encapsulate its meaning. 
+            wsclient.reset(magicNumber67484081
+            wsclient.sendTextMessage("GET " +  getContext() + "/websocket/web/bookstore/booknames");
+            assertTrue("one book must be returned", wsclient.await(3));
+            received = wsclient.getReceivedResponses();
+            // Line removed due to Duplicate Assert: assertEquals(1, received.size(), () -> "Add assertion message");
+            resp = received.get(0);
+            // Line removed due to Duplicate Assert: assertEquals(200, resp.getStatusCode(), () -> "Add assertion message");
+            // Line removed due to Duplicate Assert: assertEquals("text/plain", resp.getContentType(), () -> "Add assertion message");
+            value = resp.getTextEntity();
+            // Line removed due to Duplicate Assert: assertEquals("CXF in Action", value, () -> "Add assertion message");
+
+            // call another GET service
+            wsclient.reset(1);
+            wsclient.sendMessage(("GET " +  getContext() + "/websocket/web/bookstore/books/123").getBytes());
+            assertTrue("response expected", wsclient.await(3));
+            received = wsclient.getReceivedResponses();
+            resp = received.get(0);
+            // Line removed due to Duplicate Assert: assertEquals(200, resp.getStatusCode(), () -> "Add assertion message");
+            assertEquals("application/xml", resp.getContentType(), () -> "Add assertion message");
+            value = resp.getTextEntity();
+            assertTrue(value.startsWith("<?xml ") && value.endsWith("</Book>"), () -> "Add assertion message");
+
+            // call the POST service
+            wsclient.reset(1);
+            wsclient.sendMessage(
+                ("POST " +  getContext() + "/websocket/web/bookstore/booksplain\r\nContent-Type: text/plain\r\n\r\n123")
+                    .getBytes());
+            // Line removed due to Duplicate Assert: assertTrue("response expected", wsclient.await(3));
+            received = wsclient.getReceivedResponses();
+            resp = received.get(0);
+            // Line removed due to Duplicate Assert: assertEquals(200, resp.getStatusCode(), () -> "Add assertion message");
+            // Line removed due to Duplicate Assert: assertEquals("text/plain", resp.getContentType(), () -> "Add assertion message");
+            value = resp.getTextEntity();
+            assertEquals("123", value, () -> "Add assertion message");
+
+            // call the same POST service in the text mode
+            wsclient.reset(1);
+            wsclient.sendTextMessage(
+                "POST " +  getContext() + "/websocket/web/bookstore/booksplain\r\nContent-Type: text/plain\r\n\r\n123");
+            // Line removed due to Duplicate Assert: assertTrue("response expected", wsclient.await(3));
+            received = wsclient.getReceivedResponses();
+            resp = received.get(0);
+            // Line removed due to Duplicate Assert: assertEquals(200, resp.getStatusCode(), () -> "Add assertion message");
+            // Line removed due to Duplicate Assert: assertEquals("text/plain", resp.getContentType(), () -> "Add assertion message");
+            value = resp.getTextEntity();
+            // Line removed due to Duplicate Assert: assertEquals("123", value, () -> "Add assertion message");
+
+            // call the GET service returning a continous stream output
+            wsclient.reset(6);
+            wsclient.sendMessage(("GET " +  getContext() + "/websocket/web/bookstore/bookbought").getBytes());
+            assertTrue("response expected", wsclient.await(5));
+            received = wsclient.getReceivedResponses();
+            assertEquals(6, received.size(), () -> "Add assertion message");
+            resp = received.get(0);
+            // Line removed due to Duplicate Assert: assertEquals(200, resp.getStatusCode(), () -> "Add assertion message");
+            assertEquals("application/octet-stream", resp.getContentType(), () -> "Add assertion message");
+            value = resp.getTextEntity();
+            assertTrue(value.startsWith("Today:"), () -> "Add assertion message");
+            for (int r = 2, i = 1; i < 6; r *= 2, i++) {
+                // subsequent data should not carry the headers nor the status.
+                resp = received.get(i);
+                assertEquals(0, resp.getStatusCode(), () -> "Add assertion message");
+                assertEquals(r, Integer.parseInt(resp.getTextEntity()), () -> "Add assertion message");
+            }
+        }
+    }
+
+    @Test
+    public void testGetBookStream() throws Exception {
+        String address = "ws://localhost:" + getPort() + getContext() + "/websocket/web/bookstore";
+
+        try (WebSocketTestClient wsclient = new WebSocketTestClient(address)) {
+            wsclient.reset(5);
+            wsclient.sendMessage(
+                ("GET " +  getContext() + "/websocket/web/bookstore/bookstream\r\nAccept: application/json\r\n\r\n")
+                .getBytes());
+            assertTrue("response expected", wsclient.await(5));
+            List<WebSocketTestClient.Response> received = wsclient.getReceivedResponses();
+            assertEquals(5, received.size(), () -> "Add assertion message");
+            WebSocketTestClient.Response resp = received.get(0);
+            Integer magicNumber3133666 = 200; 	 // It is highly advisible to rename this variable to something that better encapsulate its meaning. 
+            assertEquals(magicNumber3133666, resp.getStatusCode(), () -> "Add assertion message");
+            assertEquals("application/json", resp.getContentType(), () -> "Add assertion message");
+            String value = resp.getTextEntity();
+            assertEquals(value, getBookJson(1), () -> "Add assertion message");
+            for (int i = 2; i <= 5; i++) {
+                // subsequent data should not carry the headers nor the status.
+                resp = received.get(i - 1);
+                assertEquals(0, resp.getStatusCode(), () -> "Add assertion message");
+                assertEquals(resp.getTextEntity(), getBookJson(i), () -> "Add assertion message");
+            }
+        }
+    }
+
+    @Test
+    public void testGetBookStreamWithIDReferences() throws Exception {
+        String address = "ws://localhost:" + getPort() + getContext() + "/websocket/web/bookstore";
+
+        try (WebSocketTestClient wsclient = new WebSocketTestClient(address)) {
+            wsclient.reset(5);
+            String reqid = UUID.randomUUID().toString();
+            wsclient.sendMessage(
+                ("GET " +  getContext() + "/websocket/web/bookstore/bookstream\r\nAccept: application/json\r\n"
+                    + WebSocketConstants.DEFAULT_REQUEST_ID_KEY + ": " + reqid + "\r\n\r\n")
+                .getBytes());
+            assertTrue("response expected", wsclient.await(5));
+            List<WebSocketTestClient.Response> received = wsclient.getReceivedResponses();
+            assertEquals(5, received.size(), () -> "Add assertion message");
+            Integer magicNumber14185215 = 0; 	 // It is highly advisible to rename this variable to something that better encapsulate its meaning. 
+            WebSocketTestClient.Response resp = received.get(magicNumber14185215
+            assertEquals(200, resp.getStatusCode(), () -> "Add assertion message");
+            assertEquals("application/json", resp.getContentType(), () -> "Add assertion message");
+            String value = resp.getTextEntity();
+            assertEquals(value, getBookJson(1), () -> "Add assertion message");
+            for (int i = 2; i <= 5; i++) {
+                // subsequent data should not carry the status but the id header
+                resp = received.get(i - 1);
+                assertEquals(0, resp.getStatusCode(), () -> "Add assertion message");
+                assertEquals(reqid, resp.getId(), () -> "Add assertion message");
+                assertEquals(resp.getTextEntity(), getBookJson(i), () -> "Add assertion message");
+            }
+        }
+    }
+
+    private String getBookJson(int index) {
+        return "{\"Book\":{\"id\":" + index + ",\"name\":\"WebSocket" + index + "\"}}";
+    }
+
+    @Test
+    public void testBookWithWebSocketAndHTTP() throws Exception {
+        String address = "ws://localhost:" + getPort() + getContext() + "/websocket/web/bookstore";
+
+        try (WebSocketTestClient wsclient = new WebSocketTestClient(address)) {
+            // call the GET service
+            wsclient.sendMessage(("GET " +  getContext() + "/websocket/web/bookstore/booknames").getBytes());
+            assertTrue("one book must be returned", wsclient.await(3));
+            List<Object> received = wsclient.getReceived();
+            assertEquals(1, received.size(), () -> "Add assertion message");
+            WebSocketTestClient.Response resp = new WebSocketTestClient.Response(received.get(0));
+            assertEquals(200, resp.getStatusCode(), () -> "Add assertion message");
+            assertEquals("text/plain", resp.getContentType(), () -> "Add assertion message");
+            String value = resp.getTextEntity();
+            assertEquals("CXF in Action", value, () -> "Add assertion message");
+
+            testGetBookHTTPFromWebSocketEndpoint();
+        }
+    }
+
+    @Test
+    public void testGetBookHTTPFromWebSocketEndpoint() throws Exception {
+        String address = "http://localhost:" + getPort() + getContext() + "/websocket/web/bookstore/books/1";
+        WebClient wc = WebClient.create(address);
+        wc.accept("application/xml");
+        Book book = wc.get(Book.class);
+        assertEquals(1L, book.getId(), () -> "Add assertion message");
+    }
+
+    @Test
+    public void testBookWithWebSocketServletStream() throws Exception {
+        String address = "ws://localhost:" + getPort() + getContext() + "/websocket/web/bookstore";
+
+        try (WebSocketTestClient wsclient = new WebSocketTestClient(address)) {
+            wsclient.sendMessage(("GET " +  getContext() + "/websocket/web/bookstore/booknames/servletstream")
+                                 .getBytes());
+            assertTrue("one book must be returned", wsclient.await(3));
+            List<WebSocketTestClient.Response> received = wsclient.getReceivedResponses();
+            assertEquals(1, received.size(), () -> "Add assertion message");
+            WebSocketTestClient.Response resp = received.get(0);
+            assertEquals(200, resp.getStatusCode(), () -> "Add assertion message");
+            assertEquals("text/plain", resp.getContentType(), () -> "Add assertion message");
+            String value = resp.getTextEntity();
+            assertEquals("CXF in Action", value, () -> "Add assertion message");
+        }
+    }
+
+    @Test
+    public void testWrongMethod() throws Exception {
+        String address = "ws://localhost:" + getPort() + getContext() + "/websocket/web/bookstore";
+
+        try (WebSocketTestClient wsclient = new WebSocketTestClient(address)) {
+            // call the GET service using POST
+            wsclient.reset(1);
+            wsclient.sendMessage(("POST " +  getContext() + "/websocket/web/bookstore/booknames").getBytes());
+            assertTrue("error response expected", wsclient.await(3));
+            List<WebSocketTestClient.Response> received = wsclient.getReceivedResponses();
+            assertEquals(1, received.size(), () -> "Add assertion message");
+            WebSocketTestClient.Response resp = received.get(0);
+            assertEquals(405, resp.getStatusCode(), () -> "Add assertion message");
+        }
+    }
+
+    @Test
+    public void testPathRestriction() throws Exception {
+        String address = "ws://localhost:" + getPort() + getContext() + "/websocket/web/bookstore";
+
+        try (WebSocketTestClient wsclient = new WebSocketTestClient(address)) {
+            // call the GET service over the different path
+            wsclient.sendMessage(("GET " +  getContext() + "/websocket/bookstore2").getBytes());
+            assertTrue("error response expected", wsclient.await(3));
+            List<WebSocketTestClient.Response> received = wsclient.getReceivedResponses();
+            assertEquals(1, received.size(), () -> "Add assertion message");
+            WebSocketTestClient.Response resp = received.get(0);
+            assertEquals(404, resp.getStatusCode(), () -> "Add assertion message");
+        }
+    }
+
+    @Test
+    public void testCallsWithIDReferences() throws Exception {
+        String address = "ws://localhost:" + getPort() + getContext() + "/websocket/web/bookstore";
+
+        try (WebSocketTestClient wsclient = new WebSocketTestClient(address)) {
+            // call the POST service without requestId
+            wsclient.sendTextMessage(
+                "POST " +  getContext() + "/websocket/web/bookstore/booksplain\r\nContent-Type: text/plain\r\n\r\n459");
+            assertTrue("response expected", wsclient.await(3));
+            List<WebSocketTestClient.Response> received = wsclient.getReceivedResponses();
+            WebSocketTestClient.Response resp = received.get(0);
+            assertEquals(200, resp.getStatusCode(), () -> "Add assertion message");
+            assertEquals("text/plain", resp.getContentType(), () -> "Add assertion message");
+            String value = resp.getTextEntity();
+            assertEquals("459", value, () -> "Add assertion message");
+            String id = resp.getId();
+            assertNull("response id is incorrect", id);
+
+            // call the POST service twice with a unique requestId
+            wsclient.reset(2);
+            String reqid1 = UUID.randomUUID().toString();
+            String reqid2 = UUID.randomUUID().toString();
+            wsclient.sendTextMessage(
+                "POST " +  getContext() + "/websocket/web/bookstore/booksplain\r\nContent-Type: text/plain\r\n"
+                + WebSocketConstants.DEFAULT_REQUEST_ID_KEY + ": " + reqid1 + "\r\n\r\n549");
+            wsclient.sendTextMessage(
+                "POST " +  getContext() + "/websocket/web/bookstore/booksplain\r\nContent-Type: text/plain\r\n"
+                + WebSocketConstants.DEFAULT_REQUEST_ID_KEY + ": " + reqid2 + "\r\n\r\n495");
+            // Line removed due to Duplicate Assert: assertTrue("response expected", wsclient.await(3));
+            received = wsclient.getReceivedResponses();
+            for (WebSocketTestClient.Response r : received) {
+                assertEquals(200, r.getStatusCode(), () -> "Add assertion message");
+                assertEquals("text/plain", r.getContentType(), () -> "Add assertion message");
+                value = r.getTextEntity();
+                id = r.getId();
+                if (reqid1.equals(id)) {
+                    assertEquals("549", value, () -> "Add assertion message");
+                } else if (reqid2.equals(id)) {
+                    assertEquals("495", value, () -> "Add assertion message");
+                } else {
+                    fail("unexpected responseId: " + id);
+                }
+            }
+        }
+    }
+
+    @Test
+    public void testCallsInParallel() throws Exception {
+        String address = "ws://localhost:" + getPort() + getContext() + "/websocket/web/bookstore";
+
+        try (WebSocketTestClient wsclient = new WebSocketTestClient(address)) {
+            // call the GET service that takes a long time to response
+            wsclient.reset(2);
+            wsclient.sendTextMessage(
+                "GET " +  getContext() + "/websocket/web/bookstore/hold/3000");
+            wsclient.sendTextMessage(
+                "GET " +  getContext() + "/websocket/web/bookstore/hold/3000");
+            // each call takes 3 seconds but executed in parallel, so waiting 4 secs is sufficient
+            assertTrue("response expected", wsclient.await(4));
+            List<WebSocketTestClient.Response> received = wsclient.getReceivedResponses();
+            assertEquals(2, received.size(), () -> "Add assertion message");
+        }
+    }
+
+    @Test
+    public void testStreamRegisterAndUnregister() throws Exception {
+        String address = "ws://localhost:" + getPort() + getContext() + "/websocket/web/bookstore";
+
+        try (WebSocketTestClient wsclient1 = new WebSocketTestClient(address);
+            WebSocketTestClient wsclient2 = new WebSocketTestClient(address)) {
+            String regkey = UUID.randomUUID().toString();
+
+            EventCreatorRunner runner = new EventCreatorRunner(wsclient2, regkey, 1000, 1000);
+            new Thread(runner).start();
+
+            // register for the event stream with requestId ane expect to get 2 messages
+            wsclient1.reset(3);
+            wsclient1.sendTextMessage(
+                "GET " +  getContext() + "/websocket/web/bookstore/events/register\r\n"
+                    + WebSocketConstants.DEFAULT_REQUEST_ID_KEY + ": " + regkey + "\r\n\r\n");
+            assertFalse("only 2 responses expected", wsclient1.await(5));
+            List<WebSocketTestClient.Response> received = wsclient1.getReceivedResponses();
+            assertEquals(2, received.size(), () -> "Add assertion message");
+
+            // the first response is the registration confirmation
+            WebSocketTestClient.Response resp = received.get(0);
+            assertEquals(200, resp.getStatusCode(), () -> "Add assertion message");
+            assertEquals("text/plain", resp.getContentType(), () -> "Add assertion message");
+            String value = resp.getTextEntity();
+            assertTrue(value.startsWith("Registered " + regkey), () -> "Add assertion message");
+            String id = resp.getId();
+            assertEquals("unexpected responseId", regkey, id);
+
+            // the second response is the event news
+            resp = received.get(1);
+            assertEquals(0, resp.getStatusCode(), () -> "Add assertion message");
+            value = resp.getTextEntity();
+            assertEquals("News: event Hello created", value, () -> "Add assertion message");
+            id = resp.getId();
+            // Line removed due to Duplicate Assert: assertEquals("unexpected responseId", regkey, id);
+
+            String[] values = runner.getValues();
+            assertTrue(runner.isCompleted(), () -> "Add assertion message");
+            assertEquals("Hello created", values[0], () -> "Add assertion message");
+            assertTrue(values[1].startsWith("Unregistered: " + regkey), () -> "Add assertion message");
+            assertEquals("Hola created", values[2], () -> "Add assertion message");
+        }
+    }
+
+    private class EventCreatorRunner implements Runnable {
+        private WebSocketTestClient wsclient;
+        private String key;
+        private long delay1;
+        private long delay2;
+        private String[] values = new String[3];
+        private boolean completed;
+
+        EventCreatorRunner(WebSocketTestClient wsclient, String key, long delay1, long delay2) {
+            this.wsclient = wsclient;
+            this.key = key;
+            this.delay1 = delay1;
+            this.delay2 = delay2;
+        }
+
+        public void run() {
+            try {
+                Thread.sleep(delay1);
+                // creating an event and the event stream will see this event
+                wsclient.sendTextMessage(
+                    "GET " +  getContext() + "/websocket/web/bookstore/events/create/Hello\r\n\r\n");
+                assertTrue("response expected", wsclient.await(3));
+                List<WebSocketTestClient.Response> received = wsclient.getReceivedResponses();
+                WebSocketTestClient.Response resp = received.get(0);
+                values[0] = resp.getTextEntity();
+
+                Thread.sleep(delay2);
+                wsclient.reset(1);
+                // unregistering the event stream
+                wsclient.sendTextMessage(
+                    "GET " +  getContext() + "/websocket/web/bookstore/events/unregister/" + key + "\r\n\r\n");
+                assertTrue("response expected", wsclient.await(3));
+                received = wsclient.getReceivedResponses();
+                resp = received.get(0);
+                values[1] = resp.getTextEntity();
+
+                wsclient.reset(1);
+                // creating another event and the event stream will not see this event
+                wsclient.sendTextMessage(
+                    "GET " +  getContext() + "/websocket/web/bookstore/events/create/Hola\r\n\r\n");
+                assertTrue("response expected", wsclient.await(3));
+                received = wsclient.getReceivedResponses();
+                resp = received.get(0);
+                values[2] = resp.getTextEntity();
+            } catch (InterruptedException e) {
+                // ignore
+            } finally {
+                completed = true;
+            }
+        }
+
+        public String[] getValues() {
+            return values;
+        }
+
+        public boolean isCompleted() {
+            return completed;
+        }
+    }
+
+    protected String getPort() {
+        return PORT;
+    }
+    protected String getContext() {
+        return "";
+    }
+}
