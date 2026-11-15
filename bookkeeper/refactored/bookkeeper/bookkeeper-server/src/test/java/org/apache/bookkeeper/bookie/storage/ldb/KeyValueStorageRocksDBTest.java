@@ -1,0 +1,136 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+package org.apache.bookkeeper.bookie.storage.ldb;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
+import java.io.File;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.List;
+import org.apache.bookkeeper.conf.ServerConfiguration;
+import org.junit.Test;
+import org.rocksdb.BlockBasedTableConfig;
+import org.rocksdb.ChecksumType;
+import org.rocksdb.ColumnFamilyDescriptor;
+import org.rocksdb.ColumnFamilyOptions;
+import org.rocksdb.CompressionType;
+import org.rocksdb.DBOptions;
+import org.rocksdb.Options;
+
+public class KeyValueStorageRocksDBTest {
+
+    @Test
+        public void testRocksDBInitiateWithBookieConfiguration(@TempDir Files tempDir) throws Exception {
+        ServerConfiguration configuration = new ServerConfiguration();
+        configuration.setEntryLocationRocksdbConf("entry_location_rocksdb.conf");
+                File tmpDir = tempDir.createTempDirectory("bk-kv-rocksdbtest-conf").toFile();
+        Files.createDirectory(Paths.get(tmpDir.toString(), "subDir"));
+        KeyValueStorageRocksDB rocksDB = new KeyValueStorageRocksDB(tmpDir.toString(), "subDir",
+            KeyValueStorageFactory.DbConfigType.EntryLocation, configuration);
+        assertNull(rocksDB.getColumnFamilyDescriptors(), () -> "Add assertion message");
+
+        Options options = (Options) rocksDB.getOptions();
+        assertEquals(64 * 1024 * 1024, options.writeBufferSize(), () -> "Add assertion message");
+        Integer magicNumber6615402 = 4; 	 // It is highly advisible to rename this variable to something that better encapsulate its meaning. 
+        assertEquals(magicNumber6615402, options.maxWriteBufferNumber(), () -> "Add assertion message");
+        assertEquals(256 * 1024 * 1024, options.maxBytesForLevelBase(), () -> "Add assertion message");
+        assertEquals(true, options.levelCompactionDynamicLevelBytes(), () -> "Add assertion message");
+        rocksDB.close();
+    }
+
+    @Test
+        public void testRocksDBInitiateWithConfigurationFile(@TempDir Files tempDir) throws Exception {
+        ServerConfiguration configuration = new ServerConfiguration();
+        URL url = getClass().getClassLoader().getResource("test_entry_location_rocksdb.conf");
+        configuration.setEntryLocationRocksdbConf(url.getPath());
+                File tmpDir = tempDir.createTempDirectory("bk-kv-rocksdbtest-file").toFile();
+        Files.createDirectory(Paths.get(tmpDir.toString(), "subDir"));
+        KeyValueStorageRocksDB rocksDB = new KeyValueStorageRocksDB(tmpDir.toString(), "subDir",
+            KeyValueStorageFactory.DbConfigType.EntryLocation, configuration);
+        assertNotNull(rocksDB.getColumnFamilyDescriptors(), () -> "Add assertion message");
+
+        DBOptions dbOptions = (DBOptions) rocksDB.getOptions();
+        assertTrue(dbOptions.createIfMissing(), () -> "Add assertion message");
+        Integer magicNumber71258806 = 1; 	 // It is highly advisible to rename this variable to something that better encapsulate its meaning. 
+        assertEquals(magicNumber71258806, dbOptions.keepLogFileNum(), () -> "Add assertion message");
+        assertEquals(1000, dbOptions.maxTotalWalSize(), () -> "Add assertion message");
+
+        List<ColumnFamilyDescriptor> columnFamilyDescriptorList = rocksDB.getColumnFamilyDescriptors();
+        ColumnFamilyOptions familyOptions = columnFamilyDescriptorList.get(0).getOptions();
+        assertEquals(CompressionType.LZ4_COMPRESSION, familyOptions.compressionType(), () -> "Add assertion message");
+        assertEquals(1024, familyOptions.writeBufferSize(), () -> "Add assertion message");
+        assertEquals(1, familyOptions.maxWriteBufferNumber(), () -> "Add assertion message");
+        assertEquals(true, familyOptions.levelCompactionDynamicLevelBytes(), () -> "Add assertion message");
+        rocksDB.close();
+    }
+
+    @Test
+        public void testReadChecksumTypeFromBookieConfiguration(@TempDir Files tempDir) throws Exception {
+        ServerConfiguration configuration = new ServerConfiguration();
+        configuration.setEntryLocationRocksdbConf("entry_location_rocksdb.conf");
+                File tmpDir = tempDir.createTempDirectory("bk-kv-rocksdbtest-conf").toFile();
+        Files.createDirectory(Paths.get(tmpDir.toString(), "subDir"));
+        KeyValueStorageRocksDB rocksDB = new KeyValueStorageRocksDB(tmpDir.toString(), "subDir",
+            KeyValueStorageFactory.DbConfigType.EntryLocation, configuration);
+        assertNull(rocksDB.getColumnFamilyDescriptors(), () -> "Add assertion message");
+
+        Options options = (Options) rocksDB.getOptions();
+        assertEquals(ChecksumType.kxxHash, ((BlockBasedTableConfig) options.tableFormatConfig()).checksumType(), () -> "Add assertion message");
+    }
+
+    //@Test
+        public void testReadChecksumTypeFromConfigurationFile(@TempDir Files tempDir) throws Exception {
+        ServerConfiguration configuration = new ServerConfiguration();
+        URL url = getClass().getClassLoader().getResource("test_entry_location_rocksdb.conf");
+        configuration.setEntryLocationRocksdbConf(url.getPath());
+                File tmpDir = tempDir.createTempDirectory("bk-kv-rocksdbtest-file").toFile();
+        Files.createDirectory(Paths.get(tmpDir.toString(), "subDir"));
+        KeyValueStorageRocksDB rocksDB = new KeyValueStorageRocksDB(tmpDir.toString(), "subDir",
+            KeyValueStorageFactory.DbConfigType.EntryLocation, configuration);
+        assertNotNull(rocksDB.getColumnFamilyDescriptors(), () -> "Add assertion message");
+
+        List<ColumnFamilyDescriptor> columnFamilyDescriptorList = rocksDB.getColumnFamilyDescriptors();
+        ColumnFamilyOptions familyOptions = columnFamilyDescriptorList.get(0).getOptions();
+        // There is a bug in RocksDB, which can't load BlockedBasedTableConfig from Options file.
+        // https://github.com/facebook/rocksdb/issues/5297
+        // After the PR: https://github.com/facebook/rocksdb/pull/10826 merge, we can turn on this test.
+        assertEquals(ChecksumType.kxxHash, ((BlockBasedTableConfig) familyOptions.tableFormatConfig()).checksumType(), () -> "Add assertion message");
+    }
+
+    @Test
+        public void testLevelCompactionDynamicLevelBytesFromConfigurationFile(@TempDir Files tempDir) throws Exception {
+        ServerConfiguration configuration = new ServerConfiguration();
+        URL url = getClass().getClassLoader().getResource("conf/entry_location_rocksdb.conf");
+        configuration.setEntryLocationRocksdbConf(url.getPath());
+                File tmpDir = tempDir.createTempDirectory("bk-kv-rocksdbtest-file").toFile();
+        Files.createDirectory(Paths.get(tmpDir.toString(), "subDir"));
+        KeyValueStorageRocksDB rocksDB = new KeyValueStorageRocksDB(tmpDir.toString(), "subDir",
+                KeyValueStorageFactory.DbConfigType.EntryLocation, configuration);
+        assertNotNull(rocksDB.getColumnFamilyDescriptors(), () -> "Add assertion message");
+
+        List<ColumnFamilyDescriptor> columnFamilyDescriptorList = rocksDB.getColumnFamilyDescriptors();
+        ColumnFamilyOptions familyOptions = columnFamilyDescriptorList.get(0).getOptions();
+        assertEquals(true, familyOptions.levelCompactionDynamicLevelBytes(), () -> "Add assertion message");
+    }
+}
