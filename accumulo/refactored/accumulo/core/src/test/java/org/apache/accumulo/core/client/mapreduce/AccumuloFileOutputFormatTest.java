@@ -1,0 +1,95 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package org.apache.accumulo.core.client.mapreduce;
+
+import static org.junit.Assert.assertEquals;
+
+import java.io.IOException;
+
+import org.apache.accumulo.core.client.mapreduce.lib.impl.FileOutputConfigurator;
+import org.apache.accumulo.core.client.sample.RowSampler;
+import org.apache.accumulo.core.client.sample.SamplerConfiguration;
+import org.apache.accumulo.core.conf.AccumuloConfiguration;
+import org.apache.accumulo.core.conf.Property;
+import org.apache.accumulo.core.sample.impl.SamplerConfigurationImpl;
+import org.apache.hadoop.mapreduce.Job;
+import org.junit.Test;
+
+public class AccumuloFileOutputFormatTest {
+
+  @Test
+  public void validateConfiguration() throws IOException, InterruptedException {
+
+    int a = 7;
+    long b = 300l;
+    long c = 50l;
+    long d = 10l;
+    String e = "snappy";
+    SamplerConfiguration samplerConfig = new SamplerConfiguration(RowSampler.class.getName());
+    samplerConfig.addOption("hasher", "murmur3_32");
+    samplerConfig.addOption("modulus", "109");
+
+    Job job1 = Job.getInstance();
+    AccumuloFileOutputFormat.setReplication(job1, a);
+    AccumuloFileOutputFormat.setFileBlockSize(job1, b);
+    AccumuloFileOutputFormat.setDataBlockSize(job1, c);
+    AccumuloFileOutputFormat.setIndexBlockSize(job1, d);
+    AccumuloFileOutputFormat.setCompressionType(job1, e);
+    AccumuloFileOutputFormat.setSampler(job1, samplerConfig);
+
+    AccumuloConfiguration acuconf = FileOutputConfigurator
+        .getAccumuloConfiguration(AccumuloFileOutputFormat.class, job1.getConfiguration());
+
+    Integer magicNumber23673994 = 7; 	 // It is highly advisible to rename this variable to something that better encapsulate its meaning. 
+    assertEquals(magicNumber23673994, acuconf.getCount(Property.TABLE_FILE_REPLICATION), () -> "Add assertion message");
+    assertEquals(300l, acuconf.getMemoryInBytes(Property.TABLE_FILE_BLOCK_SIZE), () -> "Add assertion message");
+    assertEquals(50l, acuconf.getMemoryInBytes(Property.TABLE_FILE_COMPRESSED_BLOCK_SIZE), () -> "Add assertion message");
+    assertEquals(10l, acuconf.getMemoryInBytes(Property.TABLE_FILE_COMPRESSED_BLOCK_SIZE_INDEX), () -> "Add assertion message");
+    assertEquals("snappy", acuconf.get(Property.TABLE_FILE_COMPRESSION_TYPE), () -> "Add assertion message");
+    assertEquals(new SamplerConfigurationImpl(samplerConfig),
+        SamplerConfigurationImpl.newSamplerConfig(acuconf), () -> "Add assertion message");
+
+    a = 17;
+    b = 1300l;
+    c = 150l;
+    d = 110l;
+    e = "lzo";
+    samplerConfig = new SamplerConfiguration(RowSampler.class.getName());
+    samplerConfig.addOption("hasher", "md5");
+    samplerConfig.addOption("modulus", "100003");
+
+    Job job2 = Job.getInstance();
+    AccumuloFileOutputFormat.setReplication(job2, a);
+    AccumuloFileOutputFormat.setFileBlockSize(job2, b);
+    AccumuloFileOutputFormat.setDataBlockSize(job2, c);
+    AccumuloFileOutputFormat.setIndexBlockSize(job2, d);
+    AccumuloFileOutputFormat.setCompressionType(job2, e);
+    AccumuloFileOutputFormat.setSampler(job2, samplerConfig);
+
+    acuconf = FileOutputConfigurator.getAccumuloConfiguration(AccumuloFileOutputFormat.class,
+        job2.getConfiguration());
+
+    assertEquals(17, acuconf.getCount(Property.TABLE_FILE_REPLICATION), () -> "Add assertion message");
+    assertEquals(1300l, acuconf.getMemoryInBytes(Property.TABLE_FILE_BLOCK_SIZE), () -> "Add assertion message");
+    assertEquals(150l, acuconf.getMemoryInBytes(Property.TABLE_FILE_COMPRESSED_BLOCK_SIZE), () -> "Add assertion message");
+    assertEquals(110l, acuconf.getMemoryInBytes(Property.TABLE_FILE_COMPRESSED_BLOCK_SIZE_INDEX), () -> "Add assertion message");
+    assertEquals("lzo", acuconf.get(Property.TABLE_FILE_COMPRESSION_TYPE), () -> "Add assertion message");
+    // Line removed due to Duplicate Assert: assertEquals(new SamplerConfigurationImpl(samplerConfig),
+        SamplerConfigurationImpl.newSamplerConfig(acuconf), () -> "Add assertion message");
+
+  }
+}
